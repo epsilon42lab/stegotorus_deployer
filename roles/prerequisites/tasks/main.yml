@@ -1,0 +1,44 @@
+- name: "Build-essential"
+  apt: pkg=build-essential state=installed
+  
+- name: "INSTALLING GIT"
+  apt: pkg=git state=installed
+
+- name: "INSTALLING Autoconf"
+  apt: pkg=autoconf state=installed
+
+- name: "INSTALLING automake"
+  apt: pkg=automake state=installed
+
+- name: "INSTALLING pkgconfig"
+  apt: pkg=pkg-config state=installed
+
+- name: "libssl-dev"
+  apt: pkg=libssl-dev state=installed
+  
+- name: "INSTALLING openssl >= 1.1.1"
+  apt: pkg=openssl state=installed
+
+- name: "INSTALLING libevent"
+  apt: pkg=libevent-dev state=installed
+
+- name: "Installing libcurl"
+  apt: pkg=libcurl4-openssl-dev state=installed
+
+- name: "Installing yaml-cpp"
+  apt: pkg=libyaml-cpp-dev state=installed
+
+- name: "Installing zlib"
+  apt: pkg=zlib1g-dev state=installed
+
+- name: "install libboost-dev"
+  apt: pkg=libboost-dev state=installed
+
+- name: "Installing libboost-system-dev"
+  apt: pkg=libboost-system-dev state=installed
+
+- name: "Installing libboost-filesystem-dev"
+  apt: pkg=libboost-filesystem-dev state=installed
+
+- name: "Installing gcc"
+  apt: pkg=gcc state=installed

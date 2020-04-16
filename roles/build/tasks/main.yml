@@ -1,0 +1,95 @@
+
+ - name: "Clone Stegotorus Git" 
+   git:
+     repo: https://github.com/TheTorProject/stegotorus.git
+     dest: /src/stegotorus
+     recursive: no
+
+ - name: "Changing directory and running autoreconf"
+   command:
+     chdir: /src/stegotorus  
+     cmd: autoreconf -i
+
+ - name: "Changing directory and running ./configure"
+   command:
+     chdir: /src/stegotorus  
+     cmd: ./configure
+
+ - name: "Runnign the command make"
+   command:
+     chdir: /src/stegotorus  
+     cmd: make 
+
+ - name: "Installing Stegotorus"
+   command:
+     chdir: /src/stegotorus  
+     cmd: make install
+   
+ - name: "Creating /etc/stegotorus folder"
+   file:
+     path: /etc/stegotorus
+     state: directory
+
+ - name: "Copy chop-nosteg-server.yaml to /etc/stegotorus/stegotorus.conf" 
+   copy:
+     src: /src/stegotorus/conf.d/chop-nosteg-server.yaml 
+     dest: /etc/stegotorus/stegotorus.conf
+     remote_src: yes
+     
+ - name: "The Down-address takes the IP of the server" 
+   lineinfile:
+     path: /etc/stegotorus/stegotorus.conf
+     regexp: '^        down-address: (?:[0-9]{1,3}\.){3}[0-9]{1,3}:[0-9]{1,5}'
+     line: '        down-address: {{ ansible_default_ipv4.address }}:{{ steg_port }}'
+
+ - name: "Setting up the steg-module" 
+   lineinfile:
+     path: /etc/stegotorus/stegotorus.conf
+     regexp: '^      - name: '
+     insertafter: '^    stegs:'
+     line: '      - name: {{ steg_mod }}'
+     
+ - name: "Adding a User"
+   user:
+     name: stego-runner
+     
+ - name: Get running Stegotorus processes 
+   shell: "ps -ef | grep -v grep | grep -w stegotorus | awk '{print $2}'"
+   register: running_processes
+
+ - name: Kill running processes
+   shell: "kill {{ item }}"
+   with_items: "{{ running_processes.stdout_lines }}"
+
+ - wait_for:
+     path: "/proc/{{ item }}/status"
+     state: absent
+   with_items: "{{ running_processes.stdout_lines }}"
+   ignore_errors: yes
+   register: killed_processes
+
+ - name: Force kill stuck processes
+   shell: "kill -9 {{ item }}"
+   with_items: "{{ killed_processes.results | select('failed') | map(attribute='item') | list }}"
+    
+ - name: "Giving permission to /var/log/stegotorus.log" 
+   file:
+     path: /var/log/stegotorus.log
+     state: touch
+     owner: stego-runner
+     mode: '0644'
+   
+ - name: "Running Stegotorus"
+   command:
+     cmd: stegotorus --daemon --log-file=/var/log/stegotorus.log --config-file=/etc/stegotorus/stegotorus.conf
+   become: true
+   become_user: stego-runner
+
+ - name: "Check if Stegotorus is Running"
+   wait_for:
+     host: "{{ ansible_default_ipv4.address }}"
+     port: "{{ steg_port }}"
+     timeout: 180
+     state: started
+     
+

@@ -1,0 +1,12 @@
+# Write the port of your Stegotorus bridge in steg_port, and the steg_mod of your choice. The below are examples. 
+# List of available steg modules (steg_mod): nosteg, nosteg_rr, http, http_apache. 
+
+- hosts: all
+  become: true
+  vars:
+    steg_port: 5000
+    steg_mod: nosteg_rr
+  roles:
+    - prerequisites
+    - build
+
