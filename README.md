@@ -11,14 +11,14 @@ Add the following line to /etc/apt/sources.list:
 
 deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main
 
-# apt add-repository ppa:ansible/ansible 
+ sudo apt add-repository ppa:ansible/ansible 
 
 Then run these commands:
 
-# apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
-# apt update
-# apt install ansible
-# ansible --version 
+  sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367
+  sudo apt update
+  sudo apt install ansible
+  sudo ansible --version 
 
 For more information, check the guide: https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html 
 
@@ -30,4 +30,4 @@ For more information, check the guide: https://docs.ansible.com/ansible/latest/i
 
 (6) Finally, run the following command from the command line (from inside the ansible-platform folder):  
 
-$ ansible-playbook -K playbook.yml -vvvv 
+   ansible-playbook -K playbook.yml -vvvv 
